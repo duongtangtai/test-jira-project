@@ -4,6 +4,7 @@ import com.example.jiraproject.common.model.BaseEntity;
 import com.example.jiraproject.common.util.JoinTableUtil;
 import com.example.jiraproject.project.model.Project;
 import com.example.jiraproject.role.model.Role;
+import com.example.jiraproject.task.model.Task;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -88,6 +89,10 @@ public class User extends BaseEntity {
     @OneToMany(mappedBy = JoinTableUtil.PROJECT_LEADER_REFERENCE_USER,
     cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Set<Project> leaders;
+
+    @OneToMany(mappedBy = JoinTableUtil.TASK_REFERENCE_USER,
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    private Set<Task> tasks;
 
     public void addRole(Role role) {
         this.getRoles().add(role);

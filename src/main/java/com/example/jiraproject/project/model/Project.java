@@ -2,6 +2,7 @@ package com.example.jiraproject.project.model;
 
 import com.example.jiraproject.common.model.BaseEntity;
 import com.example.jiraproject.common.util.JoinTableUtil;
+import com.example.jiraproject.task.model.Task;
 import com.example.jiraproject.user.model.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,6 +14,7 @@ import lombok.experimental.UtilityClass;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -44,6 +46,10 @@ public class Project extends BaseEntity{
     @ManyToOne
     @JoinColumn(name = JoinTableUtil.PROJECT_LEADER_REFERENCE_USER)
     private User leader;
+
+    @OneToMany(mappedBy = JoinTableUtil.TASK_REFERENCE_PROJECT,
+    cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    private Set<Task> tasks;
 
     public void addCreator(User user){
         this.setCreator(user);

@@ -21,4 +21,8 @@ public class JoinTableUtil {
     public static final String PROJECT_CREATOR_REFERENCE_USER = "creator";
     public static final String PROJECT_LEADER_REFERENCE_USER = "leader";
 
+    //PROJECT * TASK
+    public static final String TASK_REFERENCE_PROJECT = "project";
+
+    public static final String TASK_REFERENCE_USER = "reporter";
 }

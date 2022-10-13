@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface ProjectService extends GenericService<Project, ProjectDto, UUID> {
+    Project findProjectById(UUID projectId);
     List<ProjectWithUserDto> findAllWithCreatorAndLeader();
     ProjectWithUserDto addCreator(UUID projectId, UUID userId);
     ProjectWithUserDto removeCreator(UUID projectId);
@@ -44,6 +45,13 @@ class ProjectServiceImpl implements ProjectService {
     @Override
     public ModelMapper getMapper() {
         return this.mapper;
+    }
+
+    @Override
+    public Project findProjectById(UUID projectId) {
+        return repository.findById(projectId)
+                .orElseThrow(() ->
+                        new ValidationException(MessageUtil.getMessage(messageSource, UUID_NOT_FOUND)));
     }
 
     @Override

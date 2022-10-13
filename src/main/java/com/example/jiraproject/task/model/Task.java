@@ -2,6 +2,9 @@ package com.example.jiraproject.task.model;
 
 import com.example.jiraproject.common.model.BaseEntity;
 import com.example.jiraproject.common.util.DateTimeUtil;
+import com.example.jiraproject.common.util.JoinTableUtil;
+import com.example.jiraproject.project.model.Project;
+import com.example.jiraproject.user.model.User;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -58,6 +61,26 @@ public class Task extends BaseEntity {
     @Column(name = TaskEntity.TASK_STATUS, nullable = false)
     @Enumerated(EnumType.STRING)
     private Status status;
+
+    @ManyToOne
+    @JoinColumn(name = JoinTableUtil.TASK_REFERENCE_PROJECT, nullable = false, updatable = false)
+    private Project project;
+
+    @ManyToOne
+    @JoinColumn(name = JoinTableUtil.TASK_REFERENCE_USER, nullable = false)
+    private User reporter;
+
+    public Task addProject(Project project) {
+        this.setProject(project);
+        project.getTasks().add(this);
+        return this;
+    }
+
+    public Task addReporter(User user) {
+        this.setReporter(user);
+        user.getTasks().add(this);
+        return this;
+    }
 
     public enum Status {
         UNASSIGNED,
