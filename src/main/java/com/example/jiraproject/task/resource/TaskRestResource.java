@@ -7,7 +7,6 @@ import com.example.jiraproject.common.validation.annotation.UUIDConstraint;
 import com.example.jiraproject.common.validation.group.SaveInfo;
 import com.example.jiraproject.common.validation.group.UpdateInfo;
 import com.example.jiraproject.task.dto.TaskDto;
-import com.example.jiraproject.task.dto.TaskWithProjectAndUserDto;
 import com.example.jiraproject.task.service.TaskService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
@@ -26,20 +25,37 @@ public class TaskRestResource {
     private final TaskService service;
     private final MessageSource messageSource;
 
-    @GetMapping
-    public ResponseEntity<ResponseDto> findAll() {
-        return ResponseUtil.get(service.findAll(TaskWithProjectAndUserDto.class), HttpStatus.OK);
-    }
-
     @GetMapping("/{id}")
     public ResponseEntity<ResponseDto> findById(@PathVariable("id") @UUIDConstraint String id) {
-        return ResponseUtil.get(service.findById(TaskWithProjectAndUserDto.class, UUID.fromString(id)), HttpStatus.OK);
+        return ResponseUtil.get(service.findById(TaskDto.class, UUID.fromString(id)), HttpStatus.OK);
     }
 
-    @GetMapping("/with-paging")
+    @GetMapping
+    public ResponseEntity<ResponseDto> findAll() {
+        return ResponseUtil.get(service.findAll(TaskDto.class), HttpStatus.OK);
+    }
+
+    @GetMapping("/paging")
     public ResponseEntity<ResponseDto> findAllWithPaging(@RequestParam("size") int size,
                                                          @RequestParam("pageIndex") int pageIndex) {
-        return ResponseUtil.get(service.findAllWithPaging(TaskWithProjectAndUserDto.class, size, pageIndex), HttpStatus.OK);
+        return ResponseUtil.get(service.findAllWithPaging(TaskDto.class, size, pageIndex), HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}/with-info")
+    public ResponseEntity<ResponseDto> findByIdWithProjectAndUser(@PathVariable("id") @UUIDConstraint String id) {
+        return ResponseUtil.get(service.findByIdWithInfo(UUID.fromString(id)), HttpStatus.OK);
+    }
+
+    @GetMapping("/with-info")
+    public ResponseEntity<ResponseDto> findAllWithProjectAndUser(){
+        return ResponseUtil.get(service.findAllWithInfo(), HttpStatus.OK);
+    }
+
+
+    @GetMapping("/with-info/paging")
+    public ResponseEntity<ResponseDto> findAllWithProjectAndUserWithPaging(@RequestParam("size") int size,
+                                                                           @RequestParam("pageIndex") int pageIndex) {
+        return ResponseUtil.get(service.findAllWithInfoWithPaging(size, pageIndex), HttpStatus.OK);
     }
 
     @PostMapping

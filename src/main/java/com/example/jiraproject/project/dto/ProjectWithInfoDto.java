@@ -8,7 +8,7 @@ import java.util.UUID;
 
 @Getter
 @Setter
-public class ProjectWithUserDto {
+public class ProjectWithInfoDto {
     private UUID id;
     private String name;
     private String description;

@@ -65,10 +65,8 @@ public class BaseEntity implements Serializable, Comparable<BaseEntity> {
         LocalDateTime entityTime = entity.getCreatedAt();
         if (entityTime.isAfter(createdAt)) {
             return -1;
-        } else if (entityTime.isBefore(createdAt)) {
+        } else { // equal or before
             return 1;
-        } else {
-            return 0;
         }
     }
 

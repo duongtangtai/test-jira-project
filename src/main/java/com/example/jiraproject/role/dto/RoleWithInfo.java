@@ -9,7 +9,7 @@ import java.util.UUID;
 
 @Getter
 @Setter
-public class RoleWithOperationDto {
+public class RoleWithInfo {
     private UUID id;
     private String name;
     private String code;

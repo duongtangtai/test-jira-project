@@ -43,9 +43,20 @@ public class RoleRestResource {
         return ResponseUtil.get(service.findAllWithPaging(RoleDto.class, size, pageIndex), HttpStatus.OK);
     }
 
-    @GetMapping("/with-operations")
-    public ResponseEntity<ResponseDto> findAllWithOperations() {
-        return ResponseUtil.get(service.findAllWithOperations(), HttpStatus.OK);
+    @GetMapping("/{id}/with-info")
+    public ResponseEntity<ResponseDto> findByIdWithInfo(@PathVariable("id") @UUIDConstraint String id) {
+        return ResponseUtil.get(service.findByIdWithInfo(UUID.fromString(id)), HttpStatus.OK);
+    }
+
+    @GetMapping("/with-info")
+    public ResponseEntity<ResponseDto> findAllWithInfo() {
+        return ResponseUtil.get(service.findAllWithInfo(), HttpStatus.OK);
+    }
+
+    @GetMapping("/with-info/paging")
+    public ResponseEntity<ResponseDto> findAllWithInfoWithPaging(@RequestParam("size") int size,
+                                                                 @RequestParam("pageIndex") int pageIndex) {
+        return ResponseUtil.get(service.findAllWithInfoWithPaging(size, pageIndex), HttpStatus.OK);
     }
 
     @PostMapping

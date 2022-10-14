@@ -4,12 +4,14 @@ import com.example.jiraproject.common.service.GenericService;
 import com.example.jiraproject.common.util.MessageUtil;
 import com.example.jiraproject.operation.service.OperationService;
 import com.example.jiraproject.role.dto.RoleDto;
-import com.example.jiraproject.role.dto.RoleWithOperationDto;
+import com.example.jiraproject.role.dto.RoleWithInfo;
 import com.example.jiraproject.role.model.Role;
 import com.example.jiraproject.role.repository.RoleRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.MessageSource;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,9 +22,11 @@ import java.util.Set;
 import java.util.UUID;
 
 public interface RoleService extends GenericService<Role, RoleDto, UUID> {
-    RoleWithOperationDto addOperations(UUID roleId, Set<UUID> operationIds);
-    RoleWithOperationDto removeOperations(UUID roleId, Set<UUID> operationIds);
-    List<RoleWithOperationDto> findAllWithOperations();
+    RoleWithInfo addOperations(UUID roleId, Set<UUID> operationIds);
+    RoleWithInfo removeOperations(UUID roleId, Set<UUID> operationIds);
+    RoleWithInfo findByIdWithInfo(UUID id);
+    List<RoleWithInfo> findAllWithInfo();
+    List<RoleWithInfo> findAllWithInfoWithPaging(int size, int pageIndex);
     List<Role> findAllByIds(Set<UUID> roleIds);
 }
 @Service
@@ -46,9 +50,25 @@ class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public List<RoleWithOperationDto> findAllWithOperations() {
-        return repository.findAllRolesWithOperations().stream()
-                .map(role -> mapper.map(role, RoleWithOperationDto.class))
+    public RoleWithInfo findByIdWithInfo(UUID id) {
+        Role role = repository.findByIdWithInfo(id)
+                .orElseThrow(() ->
+                        new ValidationException(MessageUtil.getMessage(messageSource, UUID_NOT_FOUND)));
+        return mapper.map(role, RoleWithInfo.class);
+    }
+
+    @Override
+    public List<RoleWithInfo> findAllWithInfo() {
+        return repository.findAllWithInfo().stream()
+                .map(role -> mapper.map(role, RoleWithInfo.class))
+                .toList();
+    }
+
+    @Override
+    public List<RoleWithInfo> findAllWithInfoWithPaging(int size, int pageIndex) {
+        return repository.findAllWithInfoWithPaging(PageRequest.of(pageIndex, size, Sort.by("createdAt")))
+                .stream()
+                .map(model -> mapper.map(model, RoleWithInfo.class))
                 .toList();
     }
 
@@ -58,20 +78,21 @@ class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public RoleWithOperationDto addOperations(UUID roleId, Set<UUID> operationIds) {
+    public RoleWithInfo addOperations(UUID roleId, Set<UUID> operationIds) {
         Role role = repository.findById(roleId)
                 .orElseThrow(() ->
                         new ValidationException(MessageUtil.getMessage(messageSource, UUID_NOT_FOUND)));
         operationService.findAllByIds(operationIds).forEach(role::addOperation);
-        return mapper.map(role, RoleWithOperationDto.class);
+        return mapper.map(role, RoleWithInfo.class);
     }
 
     @Override
-    public RoleWithOperationDto removeOperations(UUID roleId, Set<UUID> operationIds) {
+    public RoleWithInfo removeOperations(UUID roleId, Set<UUID> operationIds) {
         Role role = repository.findById(roleId)
                 .orElseThrow(() ->
                         new ValidationException(MessageUtil.getMessage(messageSource, UUID_NOT_FOUND)));
         operationService.findAllByIds(operationIds).forEach(role::removeOperation);
-        return mapper.map(role, RoleWithOperationDto.class);
+        return mapper.map(role, RoleWithInfo.class);
     }
+
 }

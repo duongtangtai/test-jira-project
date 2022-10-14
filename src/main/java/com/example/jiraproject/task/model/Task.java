@@ -1,5 +1,6 @@
 package com.example.jiraproject.task.model;
 
+import com.example.jiraproject.comment.model.Comment;
 import com.example.jiraproject.common.model.BaseEntity;
 import com.example.jiraproject.common.util.DateTimeUtil;
 import com.example.jiraproject.common.util.JoinTableUtil;
@@ -18,6 +19,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -62,24 +64,46 @@ public class Task extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = JoinTableUtil.TASK_REFERENCE_PROJECT, nullable = false, updatable = false)
     private Project project;
 
-    @ManyToOne
-    @JoinColumn(name = JoinTableUtil.TASK_REFERENCE_USER, nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = JoinTableUtil.TASK_REFERENCE_USER) // nullable, reporter can be changed
     private User reporter;
 
-    public Task addProject(Project project) {
-        this.setProject(project);
-        project.getTasks().add(this);
-        return this;
+    @OneToMany(mappedBy = JoinTableUtil.COMMENT_REFERENCE_TASK,
+    cascade = CascadeType.ALL) //delete this task will delete all relative comments
+    private Set<Comment> comments;
+
+    @Override
+    public int hashCode() {
+        return (getClass() + name).hashCode();
     }
 
-    public Task addReporter(User user) {
-        this.setReporter(user);
-        user.getTasks().add(this);
-        return this;
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        }
+        if (obj == null || obj.getClass() != this.getClass()) {
+            return false;
+        }
+        Task task = (Task) obj;
+        return task.getName().equals(name);
+    }
+
+    @Override
+    public String toString() {
+        return "Task{" +
+                "name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", startDateExpected=" + startDateExpected +
+                ", endDateExpected=" + endDateExpected +
+                ", startDateInFact=" + startDateInFact +
+                ", endDateInFact=" + endDateInFact +
+                ", status=" + status +
+                '}';
     }
 
     public enum Status {
@@ -93,7 +117,6 @@ public class Task extends BaseEntity {
         public static final String TABLE_NAME = "J_TASK";
         public static final String NAME = "J_NAME";
         public static final String DESCRIPTION = "J_DESCRIPTION";
-        public static final String ESTIMATED_TIME = "J_ESTIMATED_TIME";
         public static final String STARTED_DATE_EXPECTED = "J_STARTED_DATE_EXPECTED";
         public static final String END_DATE_EXPECTED = "J_END_DATE_EXPECTED";
         public static final String STARTED_DATE_IN_FACT = "J_STARTED_DATE_IN_FACT";

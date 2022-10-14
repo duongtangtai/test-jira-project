@@ -43,11 +43,21 @@ public class UserRestResource {
         return ResponseUtil.get(service.findAllWithPaging(UserDto.class, size, pageIndex), HttpStatus.OK);
     }
 
-    @GetMapping("/with-roles")
-    public ResponseEntity<ResponseDto> findAllWithRoles(){
-        return ResponseUtil.get(service.findAllWithRoles(), HttpStatus.OK);
+    @GetMapping("/{id}/with-info")
+    public ResponseEntity<ResponseDto> findByIdWithInfo(@PathVariable("id") @UUIDConstraint String id){
+        return ResponseUtil.get(service.findByIdWithInfo(UUID.fromString(id)), HttpStatus.OK);
     }
 
+    @GetMapping("/with-info")
+    public ResponseEntity<ResponseDto> findAllWithInfo(){
+        return ResponseUtil.get(service.findAllWithInfo(), HttpStatus.OK);
+    }
+
+    @GetMapping("/with-info/paging")
+    public ResponseEntity<ResponseDto> findAllWithInfoWithPaging(@RequestParam("size") int size,
+                                                                 @RequestParam("pageIndex") int pageIndex) {
+        return ResponseUtil.get(service.findAllWithInfoWithPaging(size, pageIndex), HttpStatus.OK);
+    }
 
     @PostMapping
     public ResponseEntity<ResponseDto> save(@RequestBody @Validated(SaveInfo.class) UserDto dto) {

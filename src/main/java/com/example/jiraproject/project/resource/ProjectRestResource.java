@@ -42,9 +42,21 @@ public class ProjectRestResource {
         return ResponseUtil.get(service.findAllWithPaging(ProjectDto.class, size, pageIndex), HttpStatus.OK);
     }
 
-    @GetMapping("/with-creator-and-leader")
-    public ResponseEntity<ResponseDto> findAllWithCreatorAndLeader() {
-        return ResponseUtil.get(service.findAllWithCreatorAndLeader(), HttpStatus.OK);
+    @GetMapping("/{id}/with-info")
+    public ResponseEntity<ResponseDto> findByIdWithInfo(@PathVariable("id") @UUIDConstraint String id) {
+        return ResponseUtil.get(service.findByIdWithInfo(UUID.fromString(id)), HttpStatus.OK);
+    }
+
+
+    @GetMapping("/with-info")
+    public ResponseEntity<ResponseDto> findAllWithInfo() {
+        return ResponseUtil.get(service.findAllWithInfo(), HttpStatus.OK);
+    }
+
+    @GetMapping("/with-info/paging")
+    public ResponseEntity<ResponseDto> findAllWithInfoWithPaging(@RequestParam("size") int size,
+                                                                 @RequestParam("pageIndex") int pageIndex) {
+        return ResponseUtil.get(service.findAllWithInfoWithPaging(size, pageIndex), HttpStatus.OK);
     }
 
     @PostMapping

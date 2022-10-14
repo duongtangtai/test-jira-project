@@ -1,5 +1,6 @@
 package com.example.jiraproject.user.model;
 
+import com.example.jiraproject.comment.model.Comment;
 import com.example.jiraproject.common.model.BaseEntity;
 import com.example.jiraproject.common.util.JoinTableUtil;
 import com.example.jiraproject.project.model.Project;
@@ -11,6 +12,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -24,6 +26,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Entity
 @Table(name = User.UserEntity.TABLE_NAME)
+@Slf4j
 public class User extends BaseEntity {
 
     @Column(name = UserEntity.USERNAME, nullable = false)
@@ -92,7 +95,11 @@ public class User extends BaseEntity {
 
     @OneToMany(mappedBy = JoinTableUtil.TASK_REFERENCE_USER,
             cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    private Set<Task> tasks;
+    private Set<Task> reporters;
+
+    @OneToMany(mappedBy = JoinTableUtil.COMMENT_REFERENCE_USER,
+    cascade = CascadeType.ALL) //delete user will delete all comments
+    private Set<Comment> comments;
 
     public void addRole(Role role) {
         this.getRoles().add(role);
@@ -103,6 +110,16 @@ public class User extends BaseEntity {
         this.getRoles().remove(role);
         role.getUsers().remove(this);
     }
+
+    //------------------ENTITY LIFE CYCLES-------------------
+    @PreRemove
+    private void beforeRemoveUser() { //set null to relative projects and tasks
+        log.info("PreRemoveUser - Trying to set nulls to relative projects and tasks");
+        getCreators().forEach(project -> project.setCreator(null));
+        getLeaders().forEach(project -> project.setLeader(null));
+        getReporters().forEach(task -> task.setReporter(null));
+    }
+
 
     @Override
     public int hashCode() {

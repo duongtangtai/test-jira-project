@@ -1,5 +1,8 @@
 package com.example.jiraproject;
 
+import com.example.jiraproject.comment.model.Comment;
+import com.example.jiraproject.comment.repository.CommentRepository;
+import com.example.jiraproject.comment.service.CommentService;
 import com.example.jiraproject.common.util.ApiUtil;
 import com.example.jiraproject.operation.model.Operation;
 import com.example.jiraproject.operation.repository.OperationRepository;
@@ -10,6 +13,9 @@ import com.example.jiraproject.project.service.ProjectService;
 import com.example.jiraproject.role.model.Role;
 import com.example.jiraproject.role.repository.RoleRepository;
 import com.example.jiraproject.role.service.RoleService;
+import com.example.jiraproject.task.model.Task;
+import com.example.jiraproject.task.repository.TaskRepository;
+import com.example.jiraproject.task.service.TaskService;
 import com.example.jiraproject.user.model.User;
 import com.example.jiraproject.user.repository.UserRepository;
 import com.example.jiraproject.user.service.UserService;
@@ -18,6 +24,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -33,6 +40,10 @@ public class JiraProjectApplication implements CommandLineRunner {
     private final UserService userService;
     private final ProjectRepository projectRepository;
     private final ProjectService projectService;
+    private final TaskRepository taskRepository;
+    private final TaskService taskservice;
+    private final CommentRepository commentRepository;
+    private final CommentService commentService;
     public static void main(String[] args) {
         SpringApplication.run(JiraProjectApplication.class, args);
     }
@@ -166,5 +177,71 @@ public class JiraProjectApplication implements CommandLineRunner {
         projectRepository.save(project1);
         projectRepository.save(project2);
         projectRepository.save(project3);
+
+        // ADD TASKS
+        Task task1 = Task.builder()
+                .name("DA1 - Chuẩn bị cho dự án")
+                .description("Review kế hoạch, team meeting")
+                .startDateExpected(LocalDate.now())
+                .endDateExpected(LocalDate.now())
+                .startDateInFact(LocalDate.now())
+                .endDateInFact(LocalDate.now())
+                .status(Task.Status.UNASSIGNED)
+                .project(project1)
+                .reporter(user1)
+                .build();
+        Task task2 = Task.builder()
+                .name("DA1 - Sắp xếp nhân sự cho dự án")
+                .description("Điều phối nhân sự, phân chia trách nhiệm")
+                .startDateExpected(LocalDate.now())
+                .endDateExpected(LocalDate.now())
+                .startDateInFact(LocalDate.now())
+                .endDateInFact(LocalDate.now())
+                .status(Task.Status.STARTED)
+                .project(project1)
+                .reporter(user2)
+                .build();
+        Task task3 = Task.builder()
+                .name("DA2 - Duy trì tiến độ")
+                .description("Bảo trì, bảo dưỡng")
+                .startDateExpected(LocalDate.now())
+                .endDateExpected(LocalDate.now())
+                .startDateInFact(LocalDate.now())
+                .endDateInFact(LocalDate.now())
+                .status(Task.Status.COMPLETED)
+                .project(project2)
+                .reporter(user3)
+                .build();
+        taskRepository.save(task1);
+        taskRepository.save(task2);
+        taskRepository.save(task3);
+
+        //ADD COMMENTS
+        Comment comment1 = Comment.builder()
+                .description("Công nhận bạn làm nhanh thiệt")
+                .writer(user1)
+                .task(task1)
+                .build();
+        Comment comment2 = Comment.builder()
+                .description("Hay quá, làm tiếp phần kia đi")
+                .writer(user2)
+                .task(task1)
+                .build();
+        Comment comment3 = Comment.builder()
+                .description("Kì này lên lương chắc rồi bro")
+                .writer(user3)
+                .task(task2)
+                .build();
+        Comment comment4 = Comment.builder()
+                .description("Sao biết hay vậy?")
+                .writer(user1)
+                .task(task2)
+                .responseTo(comment3)
+                .build();
+        commentRepository.save(comment1);
+        commentRepository.save(comment2);
+        commentRepository.save(comment3);
+        commentRepository.save(comment4);
+
     }
 }

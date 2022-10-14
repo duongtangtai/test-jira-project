@@ -14,7 +14,7 @@ import java.util.UUID;
 
 @Getter
 @Setter
-public class TaskWithProjectAndUserDto {
+public class TaskWithInfoDto {
 
     private UUID id;
     private String name;

@@ -4,12 +4,14 @@ import com.example.jiraproject.common.service.GenericService;
 import com.example.jiraproject.common.util.MessageUtil;
 import com.example.jiraproject.role.service.RoleService;
 import com.example.jiraproject.user.dto.UserDto;
-import com.example.jiraproject.user.dto.UserWithRoleDto;
+import com.example.jiraproject.user.dto.UserWithInfoDto;
 import com.example.jiraproject.user.model.User;
 import com.example.jiraproject.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.MessageSource;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,9 +23,11 @@ import java.util.UUID;
 
 public interface UserService extends GenericService<User, UserDto, UUID> {
     User findUserById(UUID id);
-    List<UserWithRoleDto> findAllWithRoles();
-    UserWithRoleDto addRoles(UUID userId, Set<UUID> roleIds);
-    UserWithRoleDto removeRoles(UUID userId, Set<UUID> roleIds);
+    UserWithInfoDto findByIdWithInfo(UUID userId);
+    List<UserWithInfoDto> findAllWithInfo();
+    List<UserWithInfoDto> findAllWithInfoWithPaging(int size, int pageIndex);
+    UserWithInfoDto addRoles(UUID userId, Set<UUID> roleIds);
+    UserWithInfoDto removeRoles(UUID userId, Set<UUID> roleIds);
 }
 
 @Service
@@ -53,27 +57,44 @@ class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserWithRoleDto> findAllWithRoles() {
-        return repository.findAllWithRoles().stream()
-                .map(model -> mapper.map(model, UserWithRoleDto.class))
+    public UserWithInfoDto findByIdWithInfo(UUID userId) {
+        User user = repository.findByIdWithInfo(userId)
+                .orElseThrow(() ->
+                        new ValidationException(MessageUtil.getMessage(messageSource, UUID_NOT_FOUND)));
+        return mapper.map(user, UserWithInfoDto.class);
+    }
+
+    @Override
+    public List<UserWithInfoDto> findAllWithInfo() {
+        return repository.findAllWithInfo().stream()
+                .map(model -> mapper.map(model, UserWithInfoDto.class))
                 .toList();
     }
 
     @Override
-    public UserWithRoleDto addRoles(UUID userId, Set<UUID> roleIds) {
+    public List<UserWithInfoDto> findAllWithInfoWithPaging(int size, int pageIndex) {
+        return repository.findAllWithInfoWithPaging(PageRequest.of(pageIndex, size, Sort.by("createdAt")))
+                .stream()
+                .map(model -> mapper.map(model, UserWithInfoDto.class))
+                .toList();
+    }
+
+    @Override
+    public UserWithInfoDto addRoles(UUID userId, Set<UUID> roleIds) {
         User user = repository.findById(userId)
                 .orElseThrow(() ->
                         new ValidationException(MessageUtil.getMessage(messageSource, UUID_NOT_FOUND)));
         roleService.findAllByIds(roleIds).forEach(user::addRole);
-        return mapper.map(user, UserWithRoleDto.class);
+        return mapper.map(user, UserWithInfoDto.class);
     }
 
     @Override
-    public UserWithRoleDto removeRoles(UUID userId, Set<UUID> roleIds) {
+    public UserWithInfoDto removeRoles(UUID userId, Set<UUID> roleIds) {
         User user = repository.findById(userId)
                 .orElseThrow(() ->
                         new ValidationException(MessageUtil.getMessage(messageSource, UUID_NOT_FOUND)));
         roleService.findAllByIds(roleIds).forEach(user::removeRole);
-        return mapper.map(user, UserWithRoleDto.class);
+        return mapper.map(user, UserWithInfoDto.class);
     }
+
 }

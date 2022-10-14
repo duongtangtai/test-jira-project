@@ -1,5 +1,6 @@
 package com.example.jiraproject.common.service;
 
+import com.example.jiraproject.common.model.BaseEntity;
 import com.example.jiraproject.common.util.MessageUtil;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageRequest;
@@ -10,7 +11,7 @@ import javax.validation.ValidationException;
 import java.lang.reflect.Type;
 import java.util.List;
 
-public interface GenericService <T, D , U> {
+public interface GenericService <T extends BaseEntity, D , U> {
 
     JpaRepository <T, U> getRepository();
     ModelMapper getMapper();
@@ -28,7 +29,7 @@ public interface GenericService <T, D , U> {
     }
 
     default List<D> findAll(Class<D> dtoClass) {
-        List<T> modelList = getRepository().findAll();
+        List<T> modelList = getRepository().findAll().stream().sorted().toList(); //using comparable
         return modelList.stream().map(model -> getMapper().map(model, dtoClass)).toList();
     }
 

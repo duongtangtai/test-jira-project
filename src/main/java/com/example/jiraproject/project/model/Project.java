@@ -39,38 +39,42 @@ public class Project extends BaseEntity{
     @Size(min = 5, max = 100, message = "{project.symbol.size}")
     private String symbol;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = JoinTableUtil.PROJECT_CREATOR_REFERENCE_USER)
     private User creator;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = JoinTableUtil.PROJECT_LEADER_REFERENCE_USER)
     private User leader;
 
     @OneToMany(mappedBy = JoinTableUtil.TASK_REFERENCE_PROJECT,
-    cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    cascade = CascadeType.ALL) // delete this project will delete all tasks involved
     private Set<Task> tasks;
 
-    public void addCreator(User user){
-        this.setCreator(user);
-        user.getCreators().add(this);
+    @Override
+    public int hashCode() {
+        return (getClass() + name).hashCode();
     }
 
-    public void removeCreator() {
-        User user = this.getCreator();
-        this.setCreator(null);
-        user.getCreators().remove(this);
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        }
+        if (obj == null || obj.getClass() != this.getClass()) {
+            return false;
+        }
+        Project project = (Project) obj;
+        return project.getName().equals(name);
     }
 
-    public void addLeader(User user){
-        this.setLeader(user);
-        user.getLeaders().add(this);
-    }
-
-    public void removeLeader() {
-        User user = this.getLeader();
-        this.setLeader(null);
-        user.getLeaders().remove(this);
+    @Override
+    public String toString() {
+        return "Project{" +
+                "name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", symbol='" + symbol + '\'' +
+                '}';
     }
 
     @UtilityClass
