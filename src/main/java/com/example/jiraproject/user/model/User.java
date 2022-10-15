@@ -3,6 +3,7 @@ package com.example.jiraproject.user.model;
 import com.example.jiraproject.comment.model.Comment;
 import com.example.jiraproject.common.model.BaseEntity;
 import com.example.jiraproject.common.util.JoinTableUtil;
+import com.example.jiraproject.notification.model.Notification;
 import com.example.jiraproject.project.model.Project;
 import com.example.jiraproject.role.model.Role;
 import com.example.jiraproject.task.model.Task;
@@ -35,19 +36,19 @@ public class User extends BaseEntity {
     private String username;
 
     @Column(name = UserEntity.PASSWORD, nullable = false)
-    @Size(min = 5, max = 25, message = "{user.password.size}")
+    @Size(min = 5, max = 200, message = "{user.password.size}")
     @NotBlank(message = "{user.password.not-blank}")
     private String password;
 
-    @Column(name = UserEntity.FULL_NAME, nullable = false)
-    @Size(min = 5, max = 25, message = "{user.fullName.size}")
-    @NotBlank(message = "{user.fullName.not-blank}")
-    private String fullName;
+    @Column(name = UserEntity.FIRST_NAME, nullable = false)
+    @Size(max = 25, message = "{user.firstName.size}")
+    @NotBlank(message = "{user.firstName.not-blank}")
+    private String firstName;
 
-    @Column(name = UserEntity.DISPLAYED_NAME, nullable = false)
-    @Size(min = 5, max = 25, message = "{user.displayedName.size}")
-    @NotBlank(message = "{user.displayedName.not-blank}")
-    private String displayedName;
+    @Column(name = UserEntity.LAST_NAME, nullable = false)
+    @Size(max = 25, message = "{user.lastName.size}")
+    @NotBlank(message = "{user.lastName.not-blank}")
+    private String lastName;
 
     @Column(name = UserEntity.AVATAR)
     @Size(max = 200, message = "{user.avatar.size}")
@@ -78,28 +79,14 @@ public class User extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private AccountStatus accountStatus;
 
+    //------------------------RELATIONSHIP-------------------------
+    //----------WITH ROLE--------------
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = JoinTableUtil.USER_JOIN_WITH_ROLE,
             joinColumns = @JoinColumn(name = JoinTableUtil.USER_ID),
             inverseJoinColumns = @JoinColumn(name = JoinTableUtil.ROLE_ID)
     )
     private Set<Role> roles;
-
-    @OneToMany(mappedBy = JoinTableUtil.PROJECT_CREATOR_REFERENCE_USER,
-    cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    private Set<Project> creators;
-
-    @OneToMany(mappedBy = JoinTableUtil.PROJECT_LEADER_REFERENCE_USER,
-    cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    private Set<Project> leaders;
-
-    @OneToMany(mappedBy = JoinTableUtil.TASK_REFERENCE_USER,
-            cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    private Set<Task> reporters;
-
-    @OneToMany(mappedBy = JoinTableUtil.COMMENT_REFERENCE_USER,
-    cascade = CascadeType.ALL) //delete user will delete all comments
-    private Set<Comment> comments;
 
     public void addRole(Role role) {
         this.getRoles().add(role);
@@ -110,6 +97,34 @@ public class User extends BaseEntity {
         this.getRoles().remove(role);
         role.getUsers().remove(this);
     }
+
+    //----------WITH PROJECT-------------
+    @OneToMany(mappedBy = JoinTableUtil.PROJECT_CREATOR_REFERENCE_USER,
+    cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    private Set<Project> creators;
+
+    @OneToMany(mappedBy = JoinTableUtil.PROJECT_LEADER_REFERENCE_USER,
+    cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    private Set<Project> leaders;
+
+    //----------WITH TASK-------------
+    @OneToMany(mappedBy = JoinTableUtil.TASK_REFERENCE_USER,
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    private Set<Task> reporters;
+
+    //----------WITH COMMENT-------------
+    @OneToMany(mappedBy = JoinTableUtil.COMMENT_REFERENCE_USER,
+    cascade = CascadeType.ALL) //delete user will delete all relative comments
+    private Set<Comment> comments;
+
+    //----------WITH NOTIFICATION-------------
+    @OneToMany(mappedBy = JoinTableUtil.NOTIFICATION_SENDER_REFERENCE_USER,
+            cascade = CascadeType.ALL) //delete senders will delete all relative notifications
+    private Set<Notification> senders;
+
+    @OneToMany(mappedBy = JoinTableUtil.NOTIFICATION_RECEIVER_REFERENCE_RECEIVER,
+            cascade = CascadeType.ALL) //delete receivers will delete all relative notifications
+    private Set<Notification> receivers;
 
     //------------------ENTITY LIFE CYCLES-------------------
     @PreRemove
@@ -143,8 +158,8 @@ public class User extends BaseEntity {
         return "User{" +
                 "username='" + username + '\'' +
                 ", password='" + password + '\'' +
-                ", fullName='" + fullName + '\'' +
-                ", displayedName='" + displayedName + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
                 ", avatar='" + avatar + '\'' +
                 ", email='" + email + '\'' +
                 ", facebookUrl='" + facebookUrl + '\'' +
@@ -166,8 +181,8 @@ public class User extends BaseEntity {
         public static final String TABLE_NAME = "J_USER";
         public static final String USERNAME = "J_USERNAME";
         public static final String PASSWORD = "J_PASSWORD";
-        public static final String FULL_NAME = "J_FULL_NAME";
-        public static final String DISPLAYED_NAME = "J_DISPLAYED_NAME";
+        public static final String FIRST_NAME = "J_FIRST_NAME";
+        public static final String LAST_NAME = "J_LAST_NAME";
         public static final String AVATAR = "J_AVATAR";
         public static final String EMAIL = "J_EMAIL";
         public static final String FACEBOOK_URL = "J_FACEBOOK_URL";

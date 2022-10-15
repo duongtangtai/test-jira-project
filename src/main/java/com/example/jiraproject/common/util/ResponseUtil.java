@@ -67,7 +67,6 @@ public class ResponseUtil {
                 status
         );
     }
-
     public static ResponseEntity<ResponseDto> get(Object dto, HttpStatus status) {
         return new ResponseEntity<>(
                 ResponseDto

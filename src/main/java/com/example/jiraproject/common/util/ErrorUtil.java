@@ -1,5 +1,6 @@
 package com.example.jiraproject.common.util;
 
+import com.example.jiraproject.notification.model.Notification;
 import com.example.jiraproject.operation.model.Operation;
 import com.example.jiraproject.task.model.Task;
 import com.example.jiraproject.user.model.User;
@@ -36,6 +37,8 @@ public class ErrorUtil {
             return List.of(MessageUtil.INVALID_USER_ACCOUNT_STATUS);
         } else if (Task.Status.class.equals(targetType)){
             return List.of(MessageUtil.INVALID_TASK_STATUS);
+        } else if (Notification.Status.class.equals(targetType)){
+            return List.of(MessageUtil.INVALID_NOTIFICATION_STATUS);
         } else {
             return List.of(exception.getOriginalMessage());
         }

@@ -14,8 +14,8 @@ public class UserWithInfoDto {
     private UUID id;
     private String username;
     private String password;
-    private String fullName;
-    private String displayedName;
+    private String firstName;
+    private String lastName;
     private String avatar;
     private String email;
     private String facebookUrl;

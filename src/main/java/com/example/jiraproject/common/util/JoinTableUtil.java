@@ -32,4 +32,8 @@ public class JoinTableUtil {
     public static final String COMMENT_REFERENCE_TASK = "task";
     //COMMENT & COMMENT
     public static final String COMMENT_REFERENCE_COMMENT = "responseTo";
+
+    //NOTIFICATION & USER
+    public static final String NOTIFICATION_SENDER_REFERENCE_USER = "sender";
+    public static final String NOTIFICATION_RECEIVER_REFERENCE_RECEIVER = "receiver";
 }

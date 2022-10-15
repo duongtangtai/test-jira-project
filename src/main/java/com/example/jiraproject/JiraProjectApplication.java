@@ -4,6 +4,9 @@ import com.example.jiraproject.comment.model.Comment;
 import com.example.jiraproject.comment.repository.CommentRepository;
 import com.example.jiraproject.comment.service.CommentService;
 import com.example.jiraproject.common.util.ApiUtil;
+import com.example.jiraproject.notification.model.Notification;
+import com.example.jiraproject.notification.repository.NotificationRepository;
+import com.example.jiraproject.notification.service.NotificationService;
 import com.example.jiraproject.operation.model.Operation;
 import com.example.jiraproject.operation.repository.OperationRepository;
 import com.example.jiraproject.operation.service.OperationService;
@@ -23,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -44,6 +48,9 @@ public class JiraProjectApplication implements CommandLineRunner {
     private final TaskService taskservice;
     private final CommentRepository commentRepository;
     private final CommentService commentService;
+    private final NotificationRepository notificationRepository;
+    private final NotificationService notificationService;
+    private final BCryptPasswordEncoder passwordEncoder;
     public static void main(String[] args) {
         SpringApplication.run(JiraProjectApplication.class, args);
     }
@@ -104,9 +111,9 @@ public class JiraProjectApplication implements CommandLineRunner {
         //ADD USERS
         User user1 = User.builder()
                 .username("admin")
-                .password("admin")
-                .fullName("ADMIN")
-                .displayedName("ADMIN")
+                .password(passwordEncoder.encode("admin"))
+                .firstName("ADMIN")
+                .lastName("ADMIN")
                 .avatar("avatar1 url")
                 .email("admin@gmail.com")
                 .facebookUrl("facebook1 url")
@@ -117,9 +124,9 @@ public class JiraProjectApplication implements CommandLineRunner {
                 .build();
         User user2 = User.builder()
                 .username("duongtangtai")
-                .password("12345")
-                .fullName("Dương Tăng Tài")
-                .displayedName("Tăng Tài")
+                .password(passwordEncoder.encode("12345"))
+                .firstName("Tài")
+                .lastName("Dương")
                 .avatar("avatar2 url")
                 .email("duongtangtai@gmail.com")
                 .facebookUrl("facebook2 url")
@@ -130,9 +137,9 @@ public class JiraProjectApplication implements CommandLineRunner {
                 .build();
         User user3 = User.builder()
                 .username("tranmynhi")
-                .password("12345")
-                .fullName("Trần Mỹ Nhi")
-                .displayedName("Mỹ Nhi")
+                .password(passwordEncoder.encode("12345"))
+                .firstName("Nhi")
+                .lastName("Trần")
                 .avatar("avatar3 url")
                 .email("tranmynhi@gmail.com")
                 .facebookUrl("facebook3 url")
@@ -243,5 +250,24 @@ public class JiraProjectApplication implements CommandLineRunner {
         commentRepository.save(comment3);
         commentRepository.save(comment4);
 
+        //ADD NOTIFICATIONS
+        Notification notification1 = Notification.builder()
+                .sender(user1)
+                .receiver(user2)
+                .description(user1.getFirstName() + " vừa thêm bạn vào dự án mới")
+                .build();
+        Notification notification2 = Notification.builder()
+                .sender(user2)
+                .receiver(user1)
+                .description(user2.getFirstName() + " rủ bạn tối nay đi chơi")
+                .build();
+        Notification notification3 = Notification.builder()
+                .sender(user3)
+                .receiver(user2)
+                .description(user3.getFirstName() + " đã thêm " + user2.getFirstName() + " vào danh sách bạn thân")
+                .build();
+        notificationRepository.save(notification1);
+        notificationRepository.save(notification2);
+        notificationRepository.save(notification3);
     }
 }

@@ -13,6 +13,10 @@ import java.util.UUID;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, UUID> {
+
+    @Query(value = "select u from User u left join fetch u.roles where u.username = ?1")
+    Optional<User> findByUsername(String username);
+
     Optional<User> findByUsernameOrEmail(String username, String email);
 
     @Query(value = "select u from User u left join fetch u.roles where u.id = ?1")

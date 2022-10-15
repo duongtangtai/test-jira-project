@@ -35,13 +35,13 @@ public class UserDto {
     @NotBlank(message = "{user.password.not-blank}", groups = {SaveInfo.class, UpdateInfo.class})
     private String password;
 
-    @Size(min = 5, max = 25, message = "{user.fullName.size}", groups = {SaveInfo.class, UpdateInfo.class})
-    @NotBlank(message = "{user.fullName.not-blank}", groups = {SaveInfo.class, UpdateInfo.class})
-    private String fullName;
+    @Size(max = 25, message = "{user.firstName.size}", groups = {SaveInfo.class, UpdateInfo.class})
+    @NotBlank(message = "{user.firstName.not-blank}", groups = {SaveInfo.class, UpdateInfo.class})
+    private String firstName;
 
-    @Size(min = 5, max = 25, message = "{user.displayedName.size}", groups = {SaveInfo.class, UpdateInfo.class})
-    @NotBlank(message = "{user.displayedName.not-blank}", groups = {SaveInfo.class, UpdateInfo.class})
-    private String displayedName;
+    @Size(max = 25, message = "{user.lastName.size}", groups = {SaveInfo.class, UpdateInfo.class})
+    @NotBlank(message = "{user.lastName.not-blank}", groups = {SaveInfo.class, UpdateInfo.class})
+    private String lastName;
 
     @Size(max = 200, message = "{user.avatar.size}", groups = {SaveInfo.class, UpdateInfo.class})
     private String avatar;

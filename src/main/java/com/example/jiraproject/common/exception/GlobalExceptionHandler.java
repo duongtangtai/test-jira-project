@@ -19,6 +19,7 @@ public class GlobalExceptionHandler {
     private void logError(Exception e) {
         log.error("{} occurred.", e.getClass());
     }
+
     @ExceptionHandler(ValidationException.class)
     public ResponseEntity<ResponseDto> handleValidationException(ValidationException exception) {
         logError(exception);

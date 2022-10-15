@@ -45,6 +45,30 @@ public class Comment extends BaseEntity {
     cascade = CascadeType.ALL) //delete this comment will delete all comments responding to this comment
     private Comment cmt;
 
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        }
+        if (obj == null || obj.getClass() != this.getClass()) {
+            return false;
+        }
+        Comment comment = (Comment) obj;
+        return comment.getId().equals(id);
+    }
+
+    @Override
+    public String toString() {
+        return "Comment{" +
+                "description='" + description + '\'' +
+                '}';
+    }
+
     @UtilityClass
     static class CommentEntity {
         public static final String TABLE_NAME = "J_COMMENT";
